@@ -82,7 +82,15 @@ void draw(char **lines, size_t n, const char *filename) {
   int c = 0;
   size_t num_len = get_num_len(n);
   do {
-    if (c == ' ' || c == KEY_DOWN) {
+    if (c == ' ' || c == KEY_NPAGE) {
+      if (di + text_height < n)
+        di += text_height;
+    } else if (c == KEY_PPAGE) {
+      if (di > text_height)
+        di -= text_height;
+      else
+        di = 0;
+    } else if (c == KEY_DOWN) {
       if (di + text_height < n)
         ++di;
     } else if (c == KEY_UP) {
