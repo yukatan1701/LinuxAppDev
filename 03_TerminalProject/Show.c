@@ -74,6 +74,7 @@ void draw(char **lines, size_t n, const char *filename) {
   WINDOW *win = newwin(box_height, box_width, DX, DX);
   keypad(stdscr, TRUE);
   keypad(win, TRUE);
+  set_escdelay(0);
   curs_set(0);
   scrollok(win, TRUE);
   size_t text_height = box_height-2;
