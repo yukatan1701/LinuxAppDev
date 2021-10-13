@@ -4,41 +4,45 @@ TEXT=""
 EMPTY_TEXT=""
 while IFS= read -r line; do
 	LEN=$(/bin/echo -e -n "$line" | wc -c)
-	EMPTY_TEXT=$EMPTY_TEXT$(printf %${LEN}s | tr " " " ")'\r'
+	TAIL=$(printf %${LEN}s | tr " " "=")
+	EMPTY_TEXT=$EMPTY_TEXT$TAIL'\t'
 	TEXT=$TEXT$line'\n'
 done
 
-#/bin/echo -e -n "$TEXT"
-#/bin/echo -e -n "$EMPTY_TEXT"
-
 EMPTY_LEN=$(/bin/echo -e -n "$EMPTY_TEXT" | wc -c)
-#echo $EMPTY_LEN
 
 SEQ=$(seq $EMPTY_LEN | shuf)
-#echo $SEQ
+#SEQ="2 9 3 10 6 12 11 4 7 14 5 8 15 13 1"
+
+tput clear
+
+HEIGHT=$(tput lines)
+WIDTH=$(tput cols)
 
 for ch in $SEQ; do
 	#echo "SEQ: ${ch}"
 	CUR_CHAR="$(/bin/echo -e "$TEXT" | cut -z -c${ch})"
-	
-	if [ "${CUR_CHAR}" = '' ] ; then
+	if [ "${CUR_CHAR}" = '' ] || [ "${CUR_CHAR}" = ' ' ] ; then
 		continue
 	fi
-
-	#echo "beep"
+	ROW=0
+	COL=0
 	CH_MIN="$((ch-1))"
 	BEGIN=""
 	if [ ${ch} -gt 1 ] ; then
 		BEGIN="$(/bin/echo -e "$EMPTY_TEXT" | cut -z -c1-${CH_MIN})"
 	fi
-	END=""
-	CH_PLUS="$((ch+1))"
-	if [ ${ch} -lt ${EMPTY_LEN} ] ; then
-		END="$(/bin/echo -e "$EMPTY_TEXT" | cut -z -c${CH_PLUS}-${EMPTY_LEN})"
+	ROW=$(/bin/echo -n -e "${BEGIN}" | tr -d -c '\t' | wc -c)
+	RES=$(/bin/echo -e "\t")
+	TAIL=$(/bin/echo "$BEGIN" | rev | cut -d '	' -f1)
+	COL=${#TAIL}
+	if [ $ROW -ge $HEIGHT ] || [ $COL -ge $WIDTH ]; then
+		continue
 	fi
-	EMPTY_TEXT="${BEGIN}${CUR_CHAR}${END}"
-	tput clear
-	tput cup 0 0
-	/bin/echo -n -e "${EMPTY_TEXT}" | tr '\r' '\n'
+
+	tput cup $ROW $COL
+	/bin/echo -n -e "$CUR_CHAR\b"
 	sleep ${DELAY}
 done
+
+tput cup $((HEIGHT-1)) 0
