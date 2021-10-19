@@ -1,16 +1,18 @@
-GENERATES=range gdb*.out *.txt
+GENERATES=range gdb*.out *.txt *.tmp
 
-all:
+all: build
+	
+build:
 	gcc range.c -g -O0 -Wall -Wextra -o range
 
-gdb%.out: script%.gdb range
-	gdb -q -batch -x $< --args ./range > /dev/null
+gdb%.out: build
+	gdb -q -batch -x script$*.gdb --args ./range > /dev/null
 
-test: gdb1.out gdb2.out
-	cat gdb1.out | grep "@@@" | tr -d '@' > gdb11.out
-	cmp gdb11.out gdb1.sample
-	cat gdb2.out | grep "@@@" | tr -d '@' > gdb21.out
-	cmp gdb21.out gdb2.sample
+test_%: gdb%.out
+	cat $< | grep "@@@" | tr -d '@' > $<.tmp
+	cmp $<.tmp test$*.sample
+
+test: test_1 test_2
 
 clean:
 	rm -rf $(GENERATES)
