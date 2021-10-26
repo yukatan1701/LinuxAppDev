@@ -3,6 +3,28 @@
 #include <unistd.h>
 #include <errno.h>
 
+int try_to_close(FILE *file, int is_input) {
+	if (fclose(file) != 0) {
+		if (is_input)
+			perror("Failed to close input file");
+		else
+			perror("Failed to close output file");
+		return errno;
+	}
+	return 0;
+}
+
+int try_to_unlink(const char *filename, int is_input) {	
+	if (unlink(filename) != 0) {
+		if (is_input)
+			perror("Failed to delete input file");
+		else
+			perror("Failed to delete output file");	
+		return errno;
+	}
+	return 0;
+}
+
 int main(int argc, char **argv) {
 	if (argc < 3) {
 		fprintf(stderr, "Not enoght arguments.\n");
@@ -18,6 +40,7 @@ int main(int argc, char **argv) {
 	FILE *outfile = fopen(outfile_name, "w");
 	if (!outfile) {
 		perror("Failed to open destination file");
+		try_to_close(infile, 1);
 		return errno;
 	}
 	int c = EOF;
@@ -26,6 +49,7 @@ int main(int argc, char **argv) {
 		int result = fputc(c, outfile);
 		if (result == EOF) {
 			perror("Failed to write to output file");
+
 			return errno;
 		}
 	}
@@ -33,24 +57,13 @@ int main(int argc, char **argv) {
 		perror("Failed to read a source file");
 		return errno;
 	}
-	if (fclose(outfile) != 0) {
-		perror("Failed to close output file");
-		if (fclose(infile) != 0) {
-			perror("Failed to close input file");
-			return errno;
-		}
+	if (try_to_close(outfile, 0) != 0) {
+		try_to_close(infile, 1);
 		return errno;
 	}
-	if (fclose(infile) != 0) {
-		perror("Failed to close input file");
-		return errno;
-	}
-	if (unlink(infile_name) != 0) {
-		perror("Failed to delete input file");
-		if (unlink(outfile_name) != 0) {
-			perror("Failed to delete output file");
-			return errno;
-		}
+	try_to_close(infile, 1);
+	if (try_to_unlink(infile_name, 1) != 0) {
+		try_to_unlink(outfile_name, 0);
 		return errno;
 	}
 	return 0;
