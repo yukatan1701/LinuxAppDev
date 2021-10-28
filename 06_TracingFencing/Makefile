@@ -1,9 +1,9 @@
-GENERATES=move *~ *.orig from.txt to.txt PROTECT_from.txt
+GENERATES=move *~ *.orig from.txt to.txt PROTECT_from.txt *.so
 
 all: move.c
 	cc move.c -Wall -Wextra -o move
 
-preload: fake_unlink.c
+fake_unlink.so: fake_unlink.c
 	cc -shared -fPIC -Wall -Wextra -o fake_unlink.so fake_unlink.c -ldl
 
 %.orig:
