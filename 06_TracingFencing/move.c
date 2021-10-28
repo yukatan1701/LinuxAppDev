@@ -75,7 +75,13 @@ int main(int argc, char **argv) {
 	}
 	if (errno != 0) {
 		perror("Failed to read a source file");
-		return errno;
+		int res = try_to_close(infile, 1);
+		if (res != 0)
+			return res;
+		res = try_to_unlink(outfile_name, 0);
+		if (res != 0)
+			return res;
+		return ERR_BAD_READ_INPUT;
 	}
 	int res = 0;
 	if ((res = try_to_close(outfile, 0)) != 0) {
@@ -84,8 +90,12 @@ int main(int argc, char **argv) {
 			return res2;
 		return res;
 	}
-	if ((res = try_to_close(infile, 1)) != 0)
+	if ((res = try_to_close(infile, 1)) != 0) {
+		int res2;
+		if ((res2 = try_to_unlink(outfile_name, 0)) != 0)
+			return res2;
 		return res;
+	}
 	if ((res = try_to_unlink(infile_name, 1)) != 0) {
 		int res2;
 		if ((res2 = try_to_unlink(outfile_name, 0)) != 0)
