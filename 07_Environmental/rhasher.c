@@ -4,7 +4,9 @@
 #include <errno.h>
 #include <rhash.h>
 #include <ctype.h>
+#ifdef USE_PROMPT
 #include <readline/readline.h>
+#endif
 
 enum HASH_ALG {
   Unknown,
