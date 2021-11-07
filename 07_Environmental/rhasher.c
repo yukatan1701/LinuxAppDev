@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <rhash.h>
 #include <ctype.h>
+#include <readline/readline.h>
 
 enum HASH_ALG {
   Unknown,
@@ -136,11 +137,20 @@ int main() {
   unsigned char digest[64];
   char output[130];
   while (1) {
-    printf("> ");
+    //printf("> ");
     char *line = NULL;
-    size_t N = 0;
     errno = 0;
-    int result = getline(&line, &N, stdin);
+    int result = 0;
+    #ifdef USE_PROMPT
+    line = readline("> ");
+    if (!line) {
+      printf("\n");
+      break;
+    }
+    #else
+    size_t N = 0;
+    result = getline(&line, &N, stdin);
+    #endif
     if ((result < 0 && errno != 0) || !line) {
       perror("Failed to read line");
       if (line)
