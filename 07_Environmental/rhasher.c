@@ -4,7 +4,8 @@
 #include <errno.h>
 #include <rhash.h>
 #include <ctype.h>
-#ifdef USE_PROMPT
+#include "config.h"
+#ifdef HAVE_READLINE_READLINE_H
 #include <readline/readline.h>
 #endif
 
@@ -75,28 +76,23 @@ command_t read_command(const char *line) {
   while (i < len && isspace(line[i]))
     ++i;
   size_t data_name_size = 1;
-  int is_quote = 0, quote_state = 0;
+  int is_quote = 0/*, quote_state = 0*/;
   for ( ; i < len; ++i) {
     if (isspace(line[i]) && !is_quote)
       break;
     if (line[i] == '"' && is_quote) {
-      quote_state = 2;
+      //quote_state = 2;
       break;
     }
     if (line[i] == '"' && !is_quote) {
       is_quote = 1;
-      quote_state = 1;
+      //quote_state = 1;
       continue;
     }
     ++data_name_size;
     data_name = realloc(data_name, data_name_size);
     data_name[data_name_size-2] = line[i];
     data_name[data_name_size-1] = '\0';
-  }
-  if (is_quote && quote_state != 2) {
-    free(cmd_name);
-    free(data_name);
-    return cmd;
   }
   hash_alg_t alg_type = strtoalg(cmd_name, strlen(cmd_name));
   if (alg_type == Unknown)
@@ -117,19 +113,19 @@ int hash(command_t cmd, unsigned char *digest, char *output) {
         rhash_file(RHASH_MD5, cmd.data, digest) :
         rhash_msg(RHASH_MD5, cmd.data, strlen(cmd.data), digest);
     rhash_print_bytes(output, digest, rhash_get_digest_size(RHASH_MD5),
-        ((alg == MD5_Hex ? RHPR_HEX : RHPR_BASE64) | RHPR_UPPERCASE));
+        ((alg == MD5_Hex ? RHPR_HEX : RHPR_BASE64)));
   } else if (alg == SHA1_64 || alg == SHA1_Hex) {
     res = (cmd.is_filename) ?
         rhash_file(RHASH_SHA1, cmd.data, digest) :
         rhash_msg(RHASH_SHA1, cmd.data, strlen(cmd.data), digest);
     rhash_print_bytes(output, digest, rhash_get_digest_size(RHASH_SHA1),
-        ((alg == SHA1_Hex ? RHPR_HEX : RHPR_BASE64) | RHPR_UPPERCASE));
+        ((alg == SHA1_Hex ? RHPR_HEX : RHPR_BASE64)));
   } else if (alg == TTH_64 || alg == TTH_Hex) {
     res = (cmd.is_filename) ?
         rhash_file(RHASH_TTH, cmd.data, digest) :
         rhash_msg(RHASH_TTH, cmd.data, strlen(cmd.data), digest);
     rhash_print_bytes(output, digest, rhash_get_digest_size(RHASH_TTH),
-        ((alg == SHA1_Hex ? RHPR_HEX : RHPR_BASE64) | RHPR_UPPERCASE));
+        ((alg == SHA1_Hex ? RHPR_HEX : RHPR_BASE64)));
   }
   return res;
 }
@@ -143,14 +139,15 @@ int main() {
     char *line = NULL;
     errno = 0;
     int result = 0;
-    #ifdef USE_PROMPT
-    line = readline("> ");
+    #ifdef HAVE_READLINE_READLINE_H
+    line = readline("(readline) > ");
     if (!line) {
       printf("\n");
       break;
     }
     #else
     size_t N = 0;
+    printf("> ");
     result = getline(&line, &N, stdin);
     #endif
     if ((result < 0 && errno != 0) || !line) {
