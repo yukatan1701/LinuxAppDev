@@ -3,6 +3,7 @@
 #include <string.h>
 #include <errno.h>
 #include <rhash.h>
+#include <unistd.h>
 #include <ctype.h>
 #include "config.h"
 #ifdef HAVE_READLINE_READLINE_H
@@ -140,26 +141,31 @@ int main() {
     errno = 0;
     int result = 0;
     #ifdef HAVE_READLINE_READLINE_H
-    line = readline("(readline) > ");
+    line = isatty(0) ? readline("> ") : readline(NULL);
     if (!line) {
-      printf("\n");
+      if (isatty(0))
+        printf("\n");
       break;
     }
     #else
     size_t N = 0;
-    printf("> ");
-    result = getline(&line, &N, stdin);
+    if (isatty(0))
+      printf("> ");
+    errno = 0;
+    result = getline(&line, &N, stdin);;
     #endif
     if ((result < 0 && errno != 0) || !line) {
       perror("Failed to read line");
       if (line)
         free(line);
+      break;
       continue;
     }
     if (result < 0) {
       if (line)
         free(line);
-      printf("\n");
+      if (isatty(0))
+        printf("\n");
       break;
     }
     if (strlen(line) == 1 && line[0] == '\n')
