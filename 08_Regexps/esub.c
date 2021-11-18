@@ -14,7 +14,7 @@ void usage() {
 
 void error(int errcode, regex_t *regex, char *errbuf, size_t n) {
   regerror(errcode, regex, errbuf, n);
-  printf("Failed to compile the regular expression: %s\n", errbuf);
+  printf("Failed to use the regular expression: %s\n", errbuf);
 }
 
 char parse_char(const char *str, size_t n) {
@@ -109,11 +109,10 @@ int main(int argc, char **argv) {
   }
   regmatch_t matches[NMATCH];
   int exec_err = regexec(&regex, string, NMATCH, matches, 0);
-  if (exec_err != 0) {
+  if (exec_err != 0 && exec_err != REG_NOMATCH) {
     error(exec_err, &regex, errbuf, ERRBUF_SIZE);
     return -1;
   }
-  // TODO: get pocket max idx
   int max_idx = -1;
   for ( ; max_idx < NMATCH && matches[max_idx].rm_so != -1; ++max_idx)
     ;
