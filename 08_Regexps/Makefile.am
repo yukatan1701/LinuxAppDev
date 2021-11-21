@@ -1,5 +1,5 @@
 CFLAGS = -Wall -Wextra -g
-GENERATES=*.m4 *.cache *~ compile config.* configure depcomp install-sh	Makefile.in missing rhasher *.o stamp-h1 .deps *.log *.trs test-driver Makefile
+GENERATES=*.m4 *.cache *~ compile config.* configure depcomp install-sh	Makefile.in missing esub *.o stamp-h1 .deps *.log *.trs test-driver Makefile
 
 bin_PROGRAMS=esub
 

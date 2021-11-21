@@ -48,7 +48,8 @@ char parse_char(const char *str, size_t n) {
   }
 }
 
-char *process_substitution(char *substit, char *string, regmatch_t *matches, int nm) {
+char *process_substitution(
+    char *substit, char *string, regmatch_t *matches, int mmi) {
   regmatch_t zero_match = matches[0];
   if (zero_match.rm_eo == -1 || zero_match.rm_so == -1) {
     return NULL;
@@ -65,8 +66,8 @@ char *process_substitution(char *substit, char *string, regmatch_t *matches, int
         N = N * 10 + (*num - '0');
         ++num;
       }
-      if (N >= nm) {
-        printf("Invalid match number: %d.\n", N);
+      if (N > mmi) {
+        fprintf(stderr, "Invalid match number: %d.\n", N);
         free(dest);
         return NULL;
       }
@@ -114,10 +115,10 @@ int main(int argc, char **argv) {
     return -1;
   }
   int max_idx = -1;
-  for ( ; max_idx < NMATCH && matches[max_idx].rm_so != -1; ++max_idx)
-    ;
-  if (max_idx == -1)
-    return 0;
+  for ( ; exec_err != REG_NOMATCH && max_idx < NMATCH; ++max_idx) {
+    if (matches[max_idx + 1].rm_so == -1)
+      break;
+  }
   char *res = process_substitution(substit, string, matches, max_idx);
   if (!res)
     return -1;
