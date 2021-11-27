@@ -1,6 +1,6 @@
 #include "buf.h"
  
-static void *
+void *
 buf_grow1(void *v, size_t esize, ptrdiff_t n)
 {
     struct buf *p;

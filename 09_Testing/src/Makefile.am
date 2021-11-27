@@ -1,4 +1,4 @@
-CFLAGS = -std=c99 -Wall -Wextra -O3 -g3
+CFLAGS = -std=c99 -Wall -Wextra -O3 -g3 -pedantic
 GENERATES = *.la *.lo *~ Makefile.in Makefile .deps .libs
 
 lib_LTLIBRARIES = libgrowbuf.la

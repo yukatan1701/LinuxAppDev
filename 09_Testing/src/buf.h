@@ -43,7 +43,7 @@ struct buf {
     char buffer[];
 };
 
-static void *buf_grow1(void *v, size_t esize, ptrdiff_t n);
+void *buf_grow1(void *v, size_t esize, ptrdiff_t n);
 
 #define buf_ptr(v) \
     ((struct buf *)((char *)(v) - offsetof(struct buf, buffer)))

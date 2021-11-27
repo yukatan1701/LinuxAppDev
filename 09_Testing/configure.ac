@@ -28,5 +28,6 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([gettimeofday strtoull])
 
 AC_CONFIG_FILES([Makefile
+                 tests/Makefile
                  src/Makefile])
 AC_OUTPUT
