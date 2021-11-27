@@ -11,6 +11,13 @@ AC_CONFIG_HEADERS([config.h])
 # Checks for programs.
 AC_PROG_CC
 
+PKG_CHECK_MODULES([CHECK],[check])
+
+AC_ARG_ENABLE([gcov],
+              [AS_HELP_STRING([--enable-gcov], [use Gcov to test the test suite])],
+              [], [enable_gcov=no])
+AM_CONDITIONAL([COND_GCOV],[test '!' "$enable_gcov" = no])
+
 # Checks for libraries.
 
 # Checks for header files.
