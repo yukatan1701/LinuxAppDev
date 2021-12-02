@@ -8,14 +8,12 @@
 #include "config.h"
 
 #define _(STRING) gettext(STRING)
-#define _(STRING) gettext(STRING)
-#define LOCALE_PATH "."
 
 int main(int argc, char *argv[]) {
   char *dir = dirname(realpath(argv[0], NULL));
   setlocale(LC_ALL, "");
-  bindtextdomain("guesser", LOCALE_PATH);
-  textdomain("guesser");
+  bindtextdomain(PACKAGE, LOCALE_PATH);
+  textdomain(PACKAGE);
   int lower = 0, upper = 101;
   printf(_("Imagine a number from %d to %d!\n"), lower + 1, upper - 1);
   const char *yes = _("yes");
