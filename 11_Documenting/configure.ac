@@ -4,6 +4,7 @@
 AC_PREREQ([2.69])
 AC_INIT([guesser], [1.0], [BUG-REPORT-ADDRESS])
 AM_INIT_AUTOMAKE([foreign])
+DX_INIT_DOXYGEN(guesser)
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION(0.19.8)
 GETTEXT_PACKAGE=guesser
@@ -27,5 +28,5 @@ AC_TYPE_SIZE_T
 # Checks for library functions.
 AC_CHECK_FUNCS([realpath setlocale])
 
-AC_CONFIG_FILES([Makefile src/Makefile po/Makefile.in])
+AC_CONFIG_FILES([Makefile src/Makefile po/Makefile.in Doxyfile])
 AC_OUTPUT

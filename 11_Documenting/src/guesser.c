@@ -10,11 +10,10 @@
 
 #define _(STRING) gettext(STRING)
 
-static char doc[] =
-    "Guesser -- a program that guesses the intended number.";
+static char *doc = NULL;
 
 static struct argp_option options[] = {
-  {"roman", 'r', 0, 0, "Use roman number system"},
+  {"roman", 'r', 0, 0, NULL},
   { 0 }
 };
 
@@ -31,7 +30,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
   return 0;
 }
 
-static struct argp argp = { options, parse_opt, 0, doc };
+static struct argp argp = { options, parse_opt, 0, NULL };
 
 extern const char *tableRoman[];
 
@@ -62,6 +61,9 @@ int toDecimal(const char *roman) {
 }
 
 int main(int argc, char *argv[]) {
+  doc = _("Guesser -- a program that guesses the intended number.");
+  options[0].doc = _("Use roman number system");
+  argp.doc = doc;
   int isRoman = 0;
   argp_parse(&argp, argc, argv, 0, 0, &isRoman);
   char *dir = dirname(realpath(argv[0], NULL));
