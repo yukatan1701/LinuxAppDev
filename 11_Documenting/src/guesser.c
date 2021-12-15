@@ -10,6 +10,9 @@
 
 #define _(STRING) gettext(STRING)
 
+const char *argp_program_version = "guesser 1.0";
+const char *argp_program_bug_address = "<bug-gnu-utils@gnu.org>";
+
 static char *doc = NULL;
 
 static struct argp_option options[] = {
@@ -61,19 +64,18 @@ int toDecimal(const char *roman) {
 }
 
 int main(int argc, char *argv[]) {
-  doc = _("Guesser -- a program that guesses the intended number.");
-  options[0].doc = _("Use roman number system");
-  argp.doc = doc;
-  int isRoman = 0;
-  argp_parse(&argp, argc, argv, 0, 0, &isRoman);
-  char *dir = dirname(realpath(argv[0], NULL));
-  //if (argc > 1 && strcmp(argv[1], "-r") == 0)
-  //  isRoman = 1;
   setlocale(LC_ALL, "");
   bindtextdomain(PACKAGE, LOCALE_PATH);
   textdomain(PACKAGE);
+  doc = _("Guesser -- a program that guesses the intended number.");
+  options[0].doc = _("Use roman number system");
+  argp.doc = doc;
+  argp.argp_domain = PACKAGE;
+  int is_roman = 0;
+  argp_parse(&argp, argc, argv, 0, 0, &is_roman);
+  char *dir = dirname(realpath(argv[0], NULL));
   int lower = 0, upper = 101;
-  if (isRoman)
+  if (is_roman)
     printf(_("Imagine a number from %s to %s!\n"), toRoman(lower+1), toRoman(upper-1));
   else
     printf(_("Imagine a number from %d to %d!\n"), lower + 1, upper - 1);
@@ -82,7 +84,7 @@ int main(int argc, char *argv[]) {
   size_t max_ans_len = sizeof(yes) > sizeof(no) ? sizeof(yes) : sizeof(no);
   while (lower < upper-1) {
     int middle = (lower + upper) / 2;
-    if (isRoman)
+    if (is_roman)
       printf(_("Is your number greater than %s? (%s/%s)\n"), toRoman(middle), yes, no);
     else
       printf(_("Is your number greater than %d? (%s/%s)\n"), middle, yes, no);
@@ -111,7 +113,7 @@ int main(int argc, char *argv[]) {
       lower = middle;
     }
   }
-  if (isRoman)
+  if (is_roman)
     printf(_("Your number is %s!\n"), toRoman(upper));
   else
     printf(_("Your number is %d!\n"), upper);

@@ -13,6 +13,8 @@ ALL_LINGUAS="ru"
 AC_CONFIG_SRCDIR([src/guesser.c])
 AC_CONFIG_HEADERS([config.h])
 
+AC_PATH_PROG([HELP2MAN], [help2man])
+
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_INTLTOOL
