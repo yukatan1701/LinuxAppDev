@@ -67,7 +67,6 @@ int main(int argc, char *argv[]) {
   setlocale(LC_ALL, "");
   bindtextdomain(PACKAGE, LOCALE_PATH);
   textdomain(PACKAGE);
-  printf("%s\n", LOCALE_PATH);
   doc = _("Guesser -- a program that guesses the intended number.");
   options[0].doc = _("Use roman number system");
   argp.doc = doc;
